@@ -30,6 +30,11 @@
             overflow: hidden;
             margin-bottom: 20px;
         }
+        /* 强制编辑器撑满容器，解决只显示一点点的问题 */
+        .CodeMirror {
+            height: 100% !important;
+            font-size: 14px;
+        }
         .controls {
             text-align: center;
             margin-bottom: 20px;
@@ -66,6 +71,7 @@
             line-height: 1.5;
             color: #00f5d4;
             font-family: "Consolas", monospace;
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -83,7 +89,7 @@
         // 1. 初始化代码编辑器（自带高亮、行号）
         const editor = 代码Mirror.fromTextArea(document.getElementById('code-editor'), {
             mode: "text/x-c++src",
-            theme: "monokai",
+            theme: "default",
             lineNumbers: true,
             indentUnit: 4,
             tabSize: 4,
@@ -91,16 +97,16 @@
             lineWrapping: true
         });
 
-        // 2. 默认示例代码（打开就有）
+        // 2. 默认示例代码（打开就有，直接能跑）
         editor.setValue(`#include <iostream>
 using namespace std;
 
 int main() {
-    cout << "Hello, JuZi2319 的 C++ IDE!" << endl;
+    cout << "Hello world!" << endl;
     return 0;
 }`);
 
-        // 3. 用 100% 稳定的 Compiler 探索r API 编译运行（彻底告别 404）
+        // 3. 用100%稳定的Wandbox API（无iframe，彻底告别404）
         const runBtn = document.getElementById('run-btn');
         const outputBox = document.getElementById('output');
 
@@ -111,25 +117,25 @@ int main() {
 
             const code = editor.getValue();
             try {
-                // 调用 Compiler 探索r 稳定 API（比 Wandbox 更稳定，永久可用）
-                const res = await fetch('https://godbolt.org/api/compiler/gcc-12.2.0/compile', {
+                const res = await fetch('https://wandbox.org/api/compile.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        source: code,
-                        options: "-std=c++17 -O0",
-                        filters: { "binary": true, "commentOnly": true, "directives": true }
+                        code: code,
+                        compiler: "gcc-12.2.0",
+                        options: "c++17",
+                        stdin: ""
                     })
                 });
 
                 const data = await res.json();
-                if (data.code === 0) {
-                    // 运行成功，输出结果
-                    outputBox.textContent = "✅ 运行成功！\n" + (data.stdout || "无输出");
-                    if (data.stderr) outputBox.textContent += "\n⚠️ 编译警告：\n" + data.stderr;
+                if (data.status === "0") {
+                    outputBox.textContent = "✅ 运行成功！\n" + data.program_output;
+                    if (data.compiler_output && data.compiler_output.trim() !== "") {
+                        outputBox.textContent += "\nℹ️ 编译信息：\n" + data.compiler_output;
+                    }
                 } else {
-                    // 编译/运行错误
-                    outputBox.textContent = "❌ 编译/运行错误：\n" + (data.stderr || data.stdout || "未知错误");
+                    outputBox.textContent = "❌ 编译/运行错误：\n" + data.compiler_output;
                 }
             } catch (err) {
                 outputBox.textContent = "❌ 网络错误：" + err.message + "\n请检查网络后重试";
