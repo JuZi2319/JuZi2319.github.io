@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>JuZi2319 的在线 C++ IDE</title>
-    <!-- 引入代码编辑器 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: "微软雅黑", "Consolas", sans-serif;
+            font-family: "微软雅黑", sans-serif;
             background: #1a1a2e;
             color: #fff;
             min-height: 100vh;
@@ -30,10 +26,16 @@
             overflow: hidden;
             margin-bottom: 20px;
         }
-        /* 强制编辑器撑满容器，解决只显示一点点的问题 */
-        .CodeMirror {
-            height: 100% !important;
+        #code-editor {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            color: #000;
+            font-family: "Consolas", monospace;
             font-size: 14px;
+            padding: 10px;
+            border: none;
+            resize: none;
         }
         .controls {
             text-align: center;
@@ -78,7 +80,13 @@
 <body>
     <h1>👨‍💻 JuZi2319 的在线 C++ IDE</h1>
     <div class="editor-container">
-        <textarea id="code-editor"></textarea>
+        <textarea id="code-editor">#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello world!" << endl;
+    return 0;
+}</textarea>
     </div>
     <div class="controls">
         <button id="run-btn">▶ 运行代码</button>
@@ -86,37 +94,23 @@
     <div class="output-container" id="output"></div>
 
     <script>
-        // 1. 初始化代码编辑器（自带高亮、行号）
-        const editor = 代码Mirror.fromTextArea(document.getElementById('code-editor'), {
-            mode: "text/x-c++src",
-            theme: "default",
-            lineNumbers: true,
-            indentUnit: 4,
-            tabSize: 4,
-            auto关闭Brackets: true,
-            lineWrapping: true
-        });
-
-        // 2. 默认示例代码（打开就有，直接能跑）
-        editor.setValue(`#include <iostream>
-using namespace std;
-
-int main() {
-    cout << "Hello world!" << endl;
-    return 0;
-}`);
-
-        // 3. 用100%稳定的Wandbox API（无iframe，彻底告别404）
+        // 1. 先测试按钮能不能点（最基础的测试）
         const runBtn = document.getElementById('run-btn');
         const outputBox = document.getElementById('output');
+        const code编辑or = document.getElementById('code-editor');
 
+        // 先给按钮加一个最基础的点击事件，确保能触发
         runBtn.addEventListener('click', async () => {
+            // 第一步：先让按钮变灰，显示加载中
             runBtn.disabled = true;
             runBtn.textContent = "⏳ 编译中...";
             outputBox.textContent = "正在编译运行，请稍候...\n";
 
-            const code = editor.getValue();
+            // 第二步：获取代码
+            const code = code编辑or.value;
+
             try {
+                // 第三步：调用稳定的 Wandbox API
                 const res = await fetch('https://wandbox.org/api/compile.json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -128,6 +122,7 @@ int main() {
                     })
                 });
 
+                // 第四步：解析结果
                 const data = await res.json();
                 if (data.status === "0") {
                     outputBox.textContent = "✅ 运行成功！\n" + data.program_output;
@@ -138,9 +133,11 @@ int main() {
                     outputBox.textContent = "❌ 编译/运行错误：\n" + data.compiler_output;
                 }
             } catch (err) {
-                outputBox.textContent = "❌ 网络错误：" + err.message + "\n请检查网络后重试";
+                // 捕获所有错误，避免按钮卡死
+                outputBox.textContent = "❌ 错误：" + err.message + "\n请检查网络或代码";
             }
 
+            // 第五步：恢复按钮
             runBtn.disabled = false;
             runBtn.textContent = "▶ 运行代码";
         });
