@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>JuZi2319 的 C++ 在线 IDE</title>
+    <title>JuZi2319 的在线 C++ IDE</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -29,14 +29,15 @@
             width: 100%;
             height: 100%;
             border: none;
+            background: #1e1e1e;
         }
     </style>
 </head>
 <body>
     <h1>👨‍💻 JuZi2319 的在线 C++ IDE</h1>
     <div class="ide-container">
-        <!-- 直接嵌入 Wandbox 在线编译器，默认 C++17 -->
-        <iframe src="https://wandbox.org/embed?language=cpp&code=// 在这里写你的 C++ 代码%0A%23include+%3Ciostream%3E%0Ausing+namespace+std%3B%0Aint+main()+%7B%0A++++cout+%3C%3C+%22Hello+from+C%2B%2B!%22+%3C%3C+endl%3B%0A++++return+0%3B%0A%7D"></iframe>
+        <!-- 稳定版 Wandbox 嵌入，默认 C++17，自带示例代码 -->
+        <iframe src="https://wandbox.org/nojs/embed?language=cpp&code=%23include+%3Ciostream%3E%0Ausing+namespace+std%3B%0A%0Aint+main()+%7B%0A++++cout+%3C%3C+%22Hello+from+C%2B%2B!%22+%3C%3C+endl%3B%0A++++return+0%3B%0A%7D"></iframe>
     </div>
 </body>
 </html>
