@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>JuZi2319 的 C++ 在线 IDE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "微软雅黑", sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #00f5d4;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        .ide-container {
+            width: 100%;
+            height: 80vh;
+            border: 2px solid #00f5d4;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>👨‍💻 JuZi2319 的在线 C++ IDE</h1>
+    <div class="ide-container">
+        <!-- 直接嵌入 Wandbox 在线编译器，默认 C++17 -->
+        <iframe src="https://wandbox.org/embed?language=cpp&code=// 在这里写你的 C++ 代码%0A%23include+%3Ciostream%3E%0Ausing+namespace+std%3B%0Aint+main()+%7B%0A++++cout+%3C%3C+%22Hello+from+C%2B%2B!%22+%3C%3C+endl%3B%0A++++return+0%3B%0A%7D"></iframe>
+    </div>
+</body>
+</html>
